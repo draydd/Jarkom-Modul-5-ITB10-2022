@@ -174,15 +174,12 @@ route add -net 192.219.1.0 netmask 255.255.255.0 gw 192.219.0.6
 route add -net 192.219.0.24 netmask 255.255.255.248 gw 192.219.0.6
 route add -net 192.219.2.0 netmask 255.255.254.0 gw 192.219.0.6
 ```
-### Routing Command Pada Router Ostania
-```
-route add -net 0.0.0.0 netmask 0.0.0.0 gw 192.219.0.1
-```
 
-### Routing Command Pada Router Westalis
-```
-route add -net 0.0.0.0 netmask 0.0.0.0 gw 192.219.0.5
-```
+Hasil ping dari node Garden ke WISE sebelum routing
+![ ](img/C1.png)
+
+Hasil ping dari node Garden ke WISE setelah routing
+![ ](img/C2.png)
 
 ## Soal D
 Tugas berikutnya adalah memberikan ip pada subnet Forger, Desmond, Blackbell, dan Briar secara dinamis menggunakan bantuan DHCP server. Kemudian kalian ingat bahwa kalian harus setting DHCP Relay pada router yang menghubungkannya.
@@ -242,7 +239,7 @@ subnet 192.219.0.16 netmask 255.255.255.248 {
 }
 ```
 
-Kemudian restart DHCP server
+Kemudian start DHCP server
 ```
 service isc-dhcp-server start
 ```
@@ -262,6 +259,8 @@ SERVERS="192.219.0.19"
 INTERFACES="eth0 eth1 eth2 eth3"
 OPTIONS=""
 ```
+
+Setelah itu, start dhcp relay dengan service isc-dhcp-relay start
 
 Command instalasi Bind9 pada Eden sebagai DNS server
 ```
@@ -292,12 +291,34 @@ auto eth0
 iface eth0 inet dhcp
 ```
 
+Hasil pembagian IP dinamis pada node client Blackbell
+![ ](img/D.png)
+
 ## Soal D Subsoal 1
 Agar topologi yang kalian buat dapat mengakses keluar, kalian diminta untuk mengkonfigurasi Strix menggunakan iptables, tetapi Loid tidak ingin menggunakan MASQUERADE.
 
+Tambahkan hwaddress pada konfigurasi Strix untuk mendapatkan fixed IP address, disini hwaddress dari Strix adalah 2e:00:0f:c2:46:65 dan fixed addressnya 192.168.122.223
+
+Konfigurasi Baru Strix
+```
+auto eth0
+iface eth0 inet dhcp
+hwaddress ether 2e:00:0f:c2:46:65
+
+auto eth1
+iface eth1 inet static
+        address 192.190.0.1
+        netmask 255.255.255.252
+
+auto eth2
+iface eth2 inet static
+        address 192.190.0.5
+        netmask 255.255.255.252
+ ```
+
 Untuk mengganti MASQUERADE pada command iptables, dapat digunakan SNAT --to-source (IP Strix)
 ```
-iptables -t nat -A POSTROUTING -s 192.219.0.0/21 -o eth0 -j SNAT --to-source 192.168.122.227
+iptables -t nat -A POSTROUTING -s 192.219.0.0/21 -o eth0 -j SNAT --to-source 192.168.122.223
 ```
 
 ## Soal D Subsoal 2 
