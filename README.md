@@ -291,3 +291,20 @@ Jangan lupa agar node-node client (Blackbell, Briar, Desmond, dan Forger) mendap
 auto eth0
 iface eth0 inet dhcp
 ```
+
+## Soal D Subsoal 1
+Agar topologi yang kalian buat dapat mengakses keluar, kalian diminta untuk mengkonfigurasi Strix menggunakan iptables, tetapi Loid tidak ingin menggunakan MASQUERADE.
+
+Untuk mengganti MASQUERADE pada command iptables, dapat digunakan SNAT --to-source (IP Strix)
+```
+iptables -t nat -A POSTROUTING -s 192.219.0.0/21 -o eth0 -j SNAT --to-source 192.168.122.227
+```
+
+## Soal D Subsoal 2 
+Kalian diminta untuk melakukan drop semua TCP dan UDP dari luar Topologi kalian pada server yang merupakan DHCP Server demi menjaga keamanan.
+
+Command iptables berikut akan melakukan drop semua TCP dan UDP yang menuju DHCP server (WISE)
+```
+iptables -A FORWARD -p tcp -d 192.219.0.19 -i eth0 -j DROP 
+iptables -A FORWARD -p udp -d 192.219.0.19 -i eth0 -j DROP 
+```
